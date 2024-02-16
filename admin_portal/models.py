@@ -1,57 +1,73 @@
 from django.db import models
+import uuid
 
 # Create your models here.
-class DummyTable(models.Model):
-    years_exp = models.FloatField()
-    salary = models.FloatField()
+# class DummyTable(models.Model):
+#     years_exp = models.FloatField()
+#     salary = models.FloatField()
+
+#     def __str__(self):
+#         return self.years_exp
+
+class Department(models.Model):
+    d_id=models.UUIDField(default=uuid.uuid4,unique=True,primary_key=True,editable=False)
+    dept_name=models.CharField(max_length=200)
 
     def __str__(self):
-        return self.years_exp
+        return self.dept_name
+    
+class Elective(models.Model):
+    e_id=models.UUIDField(default=uuid.uuid4,unique=True,primary_key=True,editable=False)
+    elective_name=models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.elective_name
+
 
 class StudentInfo(models.Model):
     s_id = models.CharField(max_length=20)
     name = models.CharField(max_length=100)
     jntu_no = models.CharField(max_length=20)
-    department = models.CharField(max_length=50)
+    department = models.OneToOneField(Department,on_delete=models.SET_NULL,blank=True,null=True)
     section = models.CharField(max_length=10)
     email = models.EmailField()
     curr_sem = models.IntegerField()
 
     def __str__(self):
-        return self
+        return self.name
     
 
 class ElectivesInfo(models.Model):
     course_code = models.CharField(max_length=20)
-    elective_name = models.CharField(max_length=100)
-    offering_department = models.CharField(max_length=50)
+    elective_name = models.OneToOneField(Elective,on_delete=models.SET_NULL,blank=True,null=True)
+    offering_department = models.OneToOneField(Department,on_delete=models.SET_NULL,blank=True,null=True)
     offering_strength = models.IntegerField()
     not_allowed_students = models.ManyToManyField(StudentInfo, blank=True)
 
     def __str__(self):
-        return self
+        return self.elective_name.elective_name
     
 class ResultsElectiveWise(models.Model):
     id= models.UUIDField(primary_key=True)
-    elective_name = models.ForeignKey('ElectivesInfo', on_delete=models.CASCADE)
+    elective_name = models.OneToOneField(Elective,on_delete=models.SET_NULL,blank=True,null=True)
     stu_name = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-    department = models.CharField(max_length=50)
+    department = models.OneToOneField(Department,on_delete=models.SET_NULL,blank=True,null=True)
 
     def __str__(self):
-        return self
+        return self.stu_name
 
-class ResultsDeptWise(models.Model):
-    id= models.UUIDField(primary_key=True)
-    department = models.CharField(max_length=50)
-    stu_name = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-    elective_name = models.ForeignKey('ElectivesInfo', on_delete=models.CASCADE)
+# class ResultsDeptWise(models.Model):
+#     id= models.UUIDField(primary_key=True)
+#     department = models.CharField(max_length=50)
+#     stu_name = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
+#     elective_name = models.ForeignKey('ElectivesInfo', on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self
+#     def __str__(self):
+#         return self
     
 class RegistrationTime(models.Model):
     # id= models.UUIDField(primary_key=True)
-    date = models.DateField()
-    time = models.TimeField()
-    def __str__(self):
-        return self
+    start_date = models.DateField(null=True,blank=True)
+    start_time = models.TimeField(null=True,blank=True)
+    end_date = models.DateField(null=True,blank=True)
+    end_time = models.TimeField(null=True,blank=True)

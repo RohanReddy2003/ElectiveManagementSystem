@@ -9,7 +9,8 @@
     hello world
     <form action="{% url 'admin-portal' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" id="myfile" name="myfile">
+        <input type="file" id="myfile" name="s_data" placeholder="student data">
+        <input type="file" id="myfile" name="e_data" placeholder="elective data">
         <input type="submit">
     </form>
 </body>
